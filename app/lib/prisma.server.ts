@@ -1,18 +1,24 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
 
-let prisma: PrismaClient;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-declare global {
-  var __db__: PrismaClient;
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("DATABASE_URL is required to initialize Prisma.");
 }
 
-if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
-} else {
-  if (!global.__db__) {
-    global.__db__ = new PrismaClient();
-  }
-  prisma = global.__db__;
-}
+const adapter = new PrismaNeon({ connectionString });
 
-export { prisma };
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter,
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}

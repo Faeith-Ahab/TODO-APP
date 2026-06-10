@@ -1,35 +1,41 @@
-import { Form, Link, useFetcher } from "react-router";
-import { json, redirect } from "@react-router";
-import { useActionData, useSearchParams } from "@react-router";
+import { Form, Link, useSearchParams, redirect } from "react-router";
+import { useActionData } from "react-router";
+
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { createUser, createUserSession, getUserId, verifyLogin } from "~/lib/auth.server";
+import { createUserSession, getUserId } from "~/lib/auth.server";
+import { createUser, verifyLogin } from "~/lib/auth.service.server";
 import { Navbar } from "~/components/Navbar";
 import type { ActionData } from "~/types";
+type LoaderArgs = { request: Request };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+type ActionArgs = { request: Request };
+
+export async function loader({ request }: LoaderArgs) {
+
   const userId = await getUserId(request);
   if (userId) return redirect("/todos/pending");
-  return json({});
+  return new Response(JSON.stringify({}), { status: 200, headers: { "Content-Type": "application/json" } });
+
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: ActionArgs) {
+
   const formData = await request.formData();
   const mode = formData.get("mode") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   if (!email || !password) {
-    return json<ActionData>(
-      { errors: { general: "Email and password are required." } },
-      { status: 400 }
-    );
+    return new Response(JSON.stringify({ errors: { general: "Email and password are required." } }), { status: 400, headers: { "Content-Type": "application/json" } });
+
   }
 
   if (mode === "signup") {
     const username = formData.get("username") as string;
     if (!username) {
-      return json<ActionData>({ errors: { username: "Username is required." } }, { status: 400 });
+      return new Response(JSON.stringify({ errors: { username: "Username is required." } }), { status: 400, headers: { "Content-Type": "application/json" } });
+
     }
     // Check existing
     try {
@@ -37,27 +43,25 @@ export async function action({ request }: ActionFunctionArgs) {
       return createUserSession(user.id, "/todos/pending");
     } catch (e: any) {
       if (e.code === "P2002") {
-        return json<ActionData>(
-          { errors: { general: "Email or username already in use." } },
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ errors: { general: "Email or username already in use." } }), { status: 400, headers: { "Content-Type": "application/json" } });
+
       }
-      return json<ActionData>({ errors: { general: "Something went wrong." } }, { status: 500 });
+      return new Response(JSON.stringify({ errors: { general: "Something went wrong." } }), { status: 500, headers: { "Content-Type": "application/json" } });
+
     }
   }
 
   // Login
   const user = await verifyLogin(email, password);
   if (!user) {
-    return json<ActionData>(
-      { errors: { general: "Invalid email or password." } },
-      { status: 400 }
-    );
+    return new Response(JSON.stringify({ errors: { general: "Invalid email or password." } }), { status: 400, headers: { "Content-Type": "application/json" } });
+
   }
   return createUserSession(user.id, "/todos/pending");
 }
 
 export default function Auth() {
+
   const [searchParams] = useSearchParams();
   const actionData = useActionData<ActionData>();
   const mode = searchParams.get("mode") ?? "login";

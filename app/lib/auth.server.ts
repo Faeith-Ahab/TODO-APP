@@ -1,6 +1,4 @@
-import { createCookieSessionStorage, redirect } from "@react-router/node";
-import { prisma } from "./prisma.server";
-import bcrypt from "bcryptjs";
+import { createCookieSessionStorage, redirect } from "react-router";
 
 const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -32,12 +30,6 @@ export async function requireUserId(request: Request): Promise<number> {
   return userId;
 }
 
-export async function getUser(request: Request) {
-  const userId = await getUserId(request);
-  if (!userId) return null;
-  return prisma.user.findUnique({ where: { id: userId } });
-}
-
 export async function createUserSession(userId: number, redirectTo: string) {
   const session = await sessionStorage.getSession();
   session.set("userId", userId);
@@ -57,16 +49,3 @@ export async function logout(request: Request) {
   });
 }
 
-export async function createUser(email: string, username: string, password: string) {
-  const hashedPassword = await bcrypt.hash(password, 10);
-  return prisma.user.create({
-    data: { email, username, password: hashedPassword },
-  });
-}
-
-export async function verifyLogin(email: string, password: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) return null;
-  const valid = await bcrypt.compare(password, user.password);
-  return valid ? user : null;
-}

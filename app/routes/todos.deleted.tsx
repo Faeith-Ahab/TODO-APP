@@ -1,19 +1,15 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useFetcher, useLoaderData, useOutletContext } from "@remix-run/react";
-import { Trash2 } from "lucide-react";
+import { useFetcher, useLoaderData, useOutletContext } from "react-router";
+
 import { requireUserId } from "~/lib/auth.server";
-import { prisma } from "~/lib/prisma.server";
+import { getDeletedTodos } from "~/lib/todo.service.server";
 import { TaskItem } from "~/components/TaskItem";
 import type { Todo } from "~/types";
+import { Trash2 } from "lucide-react";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   const userId = await requireUserId(request);
-  const todos = await prisma.todo.findMany({
-    where: { userId, deleted: true },
-    orderBy: { updatedAt: "desc" },
-  });
-  return json({ todos });
+  const todos = await getDeletedTodos(userId);
+  return { todos };
 }
 
 export default function Deleted() {
@@ -21,7 +17,7 @@ export default function Deleted() {
   const { searchQuery } = useOutletContext<{ searchQuery: string }>();
   const fetcher = useFetcher();
 
-  const filtered = todos.filter((t) => {
+  const filtered = todos.filter((t: Todo) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -56,7 +52,7 @@ export default function Deleted() {
               {searchQuery ? "No matching deleted tasks." : "No deleted tasks."}
             </div>
           ) : (
-            filtered.map((todo) => (
+            filtered.map((todo: Todo) => (
               <TaskItem
                 key={todo.id}
                 todo={todo as unknown as Todo}

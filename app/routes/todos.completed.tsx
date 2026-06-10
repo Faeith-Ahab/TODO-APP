@@ -1,25 +1,21 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData, useOutletContext } from "@remix-run/react";
+import { useLoaderData, useOutletContext } from "react-router";
+
 import { requireUserId } from "~/lib/auth.server";
-import { prisma } from "~/lib/prisma.server";
+import { getCompletedTodos } from "~/lib/todo.service.server";
 import { TaskItem } from "~/components/TaskItem";
 import type { Todo } from "~/types";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   const userId = await requireUserId(request);
-  const todos = await prisma.todo.findMany({
-    where: { userId, completed: true, deleted: false },
-    orderBy: { updatedAt: "desc" },
-  });
-  return json({ todos });
+  const todos = await getCompletedTodos(userId);
+  return { todos };
 }
 
 export default function Completed() {
   const { todos } = useLoaderData<typeof loader>();
   const { searchQuery } = useOutletContext<{ searchQuery: string }>();
 
-  const filtered = todos.filter((t) => {
+  const filtered = todos.filter((t: Todo) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -39,7 +35,7 @@ export default function Completed() {
               {searchQuery ? "No matching completed tasks." : "Nothing completed yet."}
             </div>
           ) : (
-            filtered.map((todo) => (
+            filtered.map((todo: Todo) => (
               <TaskItem
                 key={todo.id}
                 todo={todo as unknown as Todo}

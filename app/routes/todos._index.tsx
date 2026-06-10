@@ -1,8 +1,8 @@
-import { redirect } from "@remix-run/node";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "react-router";
 import { requireUserId } from "~/lib/auth.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   await requireUserId(request);
   return redirect("/todos/pending");
 }
+

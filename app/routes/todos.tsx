@@ -1,19 +1,19 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "react-router";
+
 import { requireUserId } from "~/lib/auth.server";
-import { prisma } from "~/lib/prisma.server";
+import { getUserById } from "~/lib/auth.service.server";
 import { Sidebar } from "~/components/Sidebar";
 import { useState } from "react";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   const userId = await requireUserId(request);
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { username: true } });
-  return json({ username: user?.username });
+  const user = await getUserById(userId);
+  return { username: user?.username };
 }
 
 export default function TodosLayout() {
   const { username } = useLoaderData<typeof loader>();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   return (

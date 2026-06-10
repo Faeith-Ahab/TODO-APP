@@ -1,20 +1,16 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData, useOutletContext } from "@remix-run/react";
+import { useLoaderData, useOutletContext } from "react-router";
+
 import { useState } from "react";
 import { requireUserId } from "~/lib/auth.server";
-import { prisma } from "~/lib/prisma.server";
+import { getPendingTodos } from "~/lib/todo.service.server";
 import { TaskItem } from "~/components/TaskItem";
 import { EditModal } from "~/components/EditModal";
 import type { Todo } from "~/types";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   const userId = await requireUserId(request);
-  const todos = await prisma.todo.findMany({
-    where: { userId, completed: false, deleted: false },
-    orderBy: { createdAt: "desc" },
-  });
-  return json({ todos });
+  const todos = await getPendingTodos(userId);
+  return { todos };
 }
 
 export default function Pending() {
@@ -22,7 +18,7 @@ export default function Pending() {
   const { searchQuery } = useOutletContext<{ searchQuery: string }>();
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
-  const filtered = todos.filter((t) => {
+  const filtered = todos.filter((t: Todo) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -42,12 +38,12 @@ export default function Pending() {
               {searchQuery ? "No matching tasks." : "No pending tasks. Add one!"}
             </div>
           ) : (
-            filtered.map((todo) => (
+            filtered.map((todo: Todo) => (
               <TaskItem
                 key={todo.id}
                 todo={todo as unknown as Todo}
                 view="pending"
-                onEdit={(t) => setEditingTodo(t)}
+                onEdit={(t: Todo) => setEditingTodo(t)}
               />
             ))
           )}

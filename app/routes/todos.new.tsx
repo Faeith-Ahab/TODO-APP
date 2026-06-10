@@ -1,33 +1,30 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import { redirect } from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
+
 import { Bookmark, Trash2 } from "lucide-react";
 import { requireUserId } from "~/lib/auth.server";
-import { prisma } from "~/lib/prisma.server";
+import { createTodo } from "~/lib/todo.service.server";
 import type { ActionData } from "~/types";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   await requireUserId(request);
-  return json({});
+  return {};
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: { request: Request }) {
   const userId = await requireUserId(request);
   const formData = await request.formData();
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
 
   if (!title || title.trim() === "") {
-    return json<ActionData>({ errors: { title: "Title is required." } }, { status: 400 });
+    return Response.json(
+      { errors: { title: "Title is required." } } satisfies ActionData,
+      { status: 400 },
+    );
   }
 
-  await prisma.todo.create({
-    data: {
-      title: title.trim(),
-      description: description?.trim() || null,
-      userId,
-    },
-  });
+  await createTodo(userId, title.trim(), description?.trim() || null);
 
   return redirect("/todos/pending");
 }
