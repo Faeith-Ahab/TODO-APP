@@ -1,1 +1,23 @@
 $ react-router dev --port "5174"
+[2m8:42:07 PM[22m [31m[1m[vite][22m[39m [31m[2m(ssr)[22m[39m An error happened during full reload
+Failed to load PostCSS config (searchPath: C:/Users/AmutuhaireFaithAhabw/Desktop/todo/remix-application): [Error] Loading PostCSS Plugin failed: Cannot find module 'autoprefixer'
+Require stack:
+- C:\Users\AmutuhaireFaithAhabw\Desktop\todo\remix-application\postcss.config.ts
+
+(@C:\Users\AmutuhaireFaithAhabw\Desktop\todo\remix-application\postcss.config.ts)
+Error: Loading PostCSS Plugin failed: Cannot find module 'autoprefixer'
+Require stack:
+- C:\Users\AmutuhaireFaithAhabw\Desktop\todo\remix-application\postcss.config.ts
+
+(@C:\Users\AmutuhaireFaithAhabw\Desktop\todo\remix-application\postcss.config.ts)
+    at load (file:///C:/Users/AmutuhaireFaithAhabw/Desktop/todo/remix-application/node_modules/vite/dist/node/chunks/node.js:19766:10)
+    at async Promise.all (index 1)
+    at plugins (file:///C:/Users/AmutuhaireFaithAhabw/Desktop/todo/remix-application/node_modules/vite/dist/node/chunks/node.js:19788:11)
+    at processResult (file:///C:/Users/AmutuhaireFaithAhabw/Desktop/todo/remix-application/node_modules/vite/dist/node/chunks/node.js:19826:13)
+
+[2m3:58:34 AM[22m [31m[1m[react-router][22m[39m Route config must be the default export in "routes.ts".
+[2m3:58:34 AM[22m [31m[1m[react-router][22m[39m [31mRoute config must be the default export in "routes.ts".[39m
+[2m3:58:36 AM[22m [31m[1m[react-router][22m[39m Route config must be the default export in "routes.ts".
+[2m3:58:36 AM[22m [31m[1m[react-router][22m[39m [31mRoute config must be the default export in "routes.ts".[39m
+[2m3:58:36 AM[22m [31m[1m[react-router][22m[39m [31mRoute config must be the default export in "routes.ts".[39m
+[2m3:58:36 AM[22m [31m[1m[react-router][22m[39m Route config must be the default export in "routes.ts".

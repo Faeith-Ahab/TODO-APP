@@ -21,6 +21,27 @@ export async function getDeletedTodos(userId: number) {
   });
 }
 
+export async function searchTodos(userId: number, keyword: string) {
+  const query = keyword.trim();
+  const todos = await prisma.todo.findMany({
+    where: query
+      ? {
+          userId,
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { description: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : { userId },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  return todos.map((todo) => ({
+    ...todo,
+    status: todo.deleted ? "deleted" : todo.completed ? "complete" : "pending",
+  }));
+}
+
 export async function createTodo(userId: number, title: string, description: string | null) {
   return prisma.todo.create({
     data: {
@@ -82,3 +103,6 @@ export async function editTodo(
     data: { title, description, updatedAt: new Date() },
   });
 }
+
+
+

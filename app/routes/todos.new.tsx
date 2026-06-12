@@ -37,56 +37,57 @@ export default function NewTask() {
   const dateStr = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
 
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div className="dashboard-screen new-task-screen">
       {/* Header */}
       <div className="section-header">NEW TASK</div>
 
-      <div className="glass-card flex-1 flex flex-col p-6 gap-5 overflow-hidden">
-        <Form method="post" className="flex flex-col h-full gap-5">
+      <div className="new-task-content">
+        <Form method="post" className="new-task-form">
           {/* Title row */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <label className="text-white/80 text-base font-light mb-2 block">Title:</label>
+          <div className="new-task-title-row">
+            <div className="new-task-title-field">
+              <label className="dashboard-label">Title:</label>
               {actionData?.errors?.title && (
-                <p className="text-red-300 text-xs mb-1">{actionData.errors.title}</p>
+                <p className="dashboard-error">{actionData.errors.title}</p>
               )}
               <input
                 name="title"
                 type="text"
-                className="glass-input w-full px-5 py-3"
+                className="new-task-input"
+                placeholder="What do you need to do?"
                 autoFocus
               />
             </div>
-            <div className="text-white/70 text-base font-light whitespace-nowrap mt-7">
+            <div className="new-task-date">
               Date: {dateStr}
             </div>
           </div>
 
           {/* Description */}
-          <div className="flex-1 flex flex-col">
-            <label className="text-white/80 text-base font-light mb-2 block">Description:</label>
+          <div className="new-task-description-field">
+            <label className="dashboard-label">Description:</label>
             <textarea
               name="description"
-              className="glass-textarea flex-1 w-full px-5 py-4 text-base"
-              placeholder="Add a description..."
+              className="new-task-textarea"
+              placeholder="Add more details about this task..."
             />
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-center gap-10">
+          <div className="new-task-actions">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors text-base"
+              className="dashboard-action-btn"
             >
-              <Bookmark size={22} strokeWidth={1.5} />
+              <Bookmark className="dashboard-action-icon" strokeWidth={1.5} />
               <span>Save</span>
             </button>
             <button
               type="reset"
-              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors text-base"
+              className="dashboard-action-btn"
             >
-              <Trash2 size={22} strokeWidth={1.5} />
+              <Trash2 className="dashboard-action-icon" strokeWidth={1.5} />
               <span>Delete</span>
             </button>
           </div>

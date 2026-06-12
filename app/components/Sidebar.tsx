@@ -1,4 +1,4 @@
-import { Form, Link, useLocation } from "react-router";
+import { Form, Link, useLocation, useNavigate } from "react-router";
 
 import {
   PenSquare,
@@ -8,9 +8,9 @@ import {
   Search,
   Power,
 } from "lucide-react";
-import { useState } from "react";
 
 interface SidebarProps {
+  username: string;
   searchQuery: string;
   onSearchChange: (value: string) => void;
 }
@@ -22,51 +22,61 @@ const navItems = [
   { to: "/todos/deleted", label: "Deleted", icon: Trash2, filter: "deleted" },
 ];
 
-export function Sidebar({ searchQuery, onSearchChange }: SidebarProps) {
+export function Sidebar({ username, searchQuery, onSearchChange }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSearchChange = (value: string) => {
+    onSearchChange(value);
+    const params = new URLSearchParams();
+    if (value.trim()) params.set("q", value);
+    navigate(`/todos/search${params.toString() ? `?${params}` : ""}`);
+  };
 
   return (
-    <div className="flex flex-col h-full py-6 px-4 gap-4 w-[280px] flex-shrink-0">
+    <aside className="dashboard-sidebar">
       {/* Logo */}
-      <div className="mb-2">
-        <div className="logo-font text-3xl leading-none">TODO</div>
-        <div className="logo-font text-3xl leading-none">APP</div>
+      <div className="sidebar-logo">
+        <div className="logo-font sidebar-logo-line">TODO APP</div>
       </div>
 
+      <div className="sidebar-greeting">{username ? `Hi, ${username}` : "Hi"}</div>
+
       {/* Nav items */}
-      <div className="flex flex-col gap-1 flex-1">
+      <div className="sidebar-nav">
         {navItems.map(({ to, label, icon: Icon }) => (
           <Link
             key={to}
             to={to}
             className={`sidebar-item ${location.pathname === to ? "active" : ""}`}
           >
-            <Icon size={22} strokeWidth={1.8} />
+            <Icon className="sidebar-icon" strokeWidth={1.8} />
             <span>{label}</span>
           </Link>
         ))}
 
         {/* Search */}
-        <div className="mt-2">
+        <Form method="get" action="/todos/search" className="sidebar-search-wrap">
           <div className="search-box">
-            <Search size={18} className="text-white/60 flex-shrink-0" />
+            <Search className="search-icon" />
             <input
+              name="q"
               type="text"
               placeholder="Search"
               value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>
-        </div>
+        </Form>
       </div>
 
       {/* Sign out */}
-      <Form method="post" action="/logout">
+      <Form method="post" action="/logout" className="sidebar-signout-form">
         <button type="submit" className="signout-btn">
           <span>Sign out</span>
-          <Power size={20} strokeWidth={1.8} />
+          <Power className="signout-icon" strokeWidth={1.8} />
         </button>
       </Form>
-    </div>
+    </aside>
   );
 }

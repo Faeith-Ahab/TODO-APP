@@ -25,13 +25,13 @@ export default function Completed() {
   });
 
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div className="dashboard-screen">
       <div className="section-header">COMPLETED</div>
 
-      <div className="glass-card flex-1 overflow-hidden">
-        <div className="task-list h-full p-4 flex flex-col gap-2">
+      <div className="tasks-panel">
+        <div className="task-list">
           {filtered.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center text-white/40 text-base italic">
+            <div className="empty-state">
               {searchQuery ? "No matching completed tasks." : "Nothing completed yet."}
             </div>
           ) : (

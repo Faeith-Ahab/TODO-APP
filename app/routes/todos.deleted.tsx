@@ -27,20 +27,20 @@ export default function Deleted() {
   });
 
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div className="dashboard-screen">
       <div className="section-header">DELETED</div>
 
-      <div className="glass-card flex-1 overflow-hidden">
-        <div className="task-list h-full p-4 flex flex-col gap-2">
+      <div className="tasks-panel">
+        <div className="task-list">
           {/* Delete all bar */}
           {filtered.length > 0 && (
-            <fetcher.Form method="post" action="/todos/action" className="mb-1">
+            <fetcher.Form method="post" action="/todos/action">
               <input type="hidden" name="intent" value="deleteAll" />
               <button
                 type="submit"
-                className="delete-all-bar w-full text-left hover:text-white/90 transition-colors"
+                className="delete-all-bar"
               >
-                <Trash2 size={20} strokeWidth={1.5} />
+                <Trash2 className="delete-all-icon" strokeWidth={1.5} />
                 <span>Delete all? </span>
                 <em>This action can not be undone.</em>
               </button>
@@ -48,7 +48,7 @@ export default function Deleted() {
           )}
 
           {filtered.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center text-white/40 text-base italic">
+            <div className="empty-state">
               {searchQuery ? "No matching deleted tasks." : "No deleted tasks."}
             </div>
           ) : (
