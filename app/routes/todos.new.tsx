@@ -6,6 +6,8 @@ import { requireUserId } from "~/lib/auth.server";
 import { createTodo } from "~/lib/todo.service.server";
 import type { ActionData } from "~/types";
 
+const TITLE_MAX_LENGTH = 18;
+
 export async function loader({ request }: { request: Request }) {
   await requireUserId(request);
   return {};
@@ -20,6 +22,13 @@ export async function action({ request }: { request: Request }) {
   if (!title || title.trim() === "") {
     return Response.json(
       { errors: { title: "Title is required." } } satisfies ActionData,
+      { status: 400 },
+    );
+  }
+
+  if (title.trim().length > TITLE_MAX_LENGTH) {
+    return Response.json(
+      { errors: { title: `Title must be ${TITLE_MAX_LENGTH} characters or fewer.` } } satisfies ActionData,
       { status: 400 },
     );
   }
@@ -59,6 +68,7 @@ export default function NewTask() {
                 type="text"
                 className="new-task-input"
                 placeholder="What do you need to do?"
+                maxLength={TITLE_MAX_LENGTH}
                 autoFocus
               />
             </div>

@@ -75,8 +75,10 @@ export default function SearchPage() {
   return (
     <div className="dashboard-screen search-screen">
 
-      <div className="section-header">
-        <span className="search-heading-desktop">SEARCH RESULTS</span>
+      <div className={`section-header ${hasActiveQuery ? "search-results-heading" : ""}`}>
+        <span className="search-heading-desktop">
+          {hasActiveQuery ? "SEARCH RESULTS" : "SEARCH"}
+        </span>
         <span className="search-heading-mobile">
           {hasActiveQuery ? "SEARCH RESULTS" : "SEARCH"}
         </span>
@@ -97,19 +99,13 @@ export default function SearchPage() {
             value={query}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder="Search"
+            placeholder="Type a keyword and press Enter to search."
             autoFocus
             autoComplete="off"
           />
         </div>
         <button type="submit" hidden aria-hidden="true" />
       </form>
-
-      {hasActiveQuery && (
-        <div className="search-status-label">
-          <em>STATUS</em>
-        </div>
-      )}
 
       <div
         className={`tasks-panel search-tasks-panel ${

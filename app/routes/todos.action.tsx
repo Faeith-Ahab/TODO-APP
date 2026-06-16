@@ -11,6 +11,8 @@ import {
   uncompleteTodo,
 } from "~/lib/todo.service.server";
 
+const TITLE_MAX_LENGTH = 18;
+
 export async function action({ request }: { request: Request }) {
   const userId = await requireUserId(request);
   const formData = await request.formData();
@@ -61,6 +63,13 @@ export async function action({ request }: { request: Request }) {
           { errors: { title: "Title is required." } },
           { status: 400 },
         );
+
+      if (title.trim().length > TITLE_MAX_LENGTH) {
+        return Response.json(
+          { errors: { title: `Title must be ${TITLE_MAX_LENGTH} characters or fewer.` } },
+          { status: 400 },
+        );
+      }
 
       assertTodoId(todoId);
       await editTodo(userId, todoId, title, description || null);

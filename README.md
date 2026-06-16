@@ -1,87 +1,119 @@
-# Welcome to React Router!
+# Todo App
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+A full-stack todo app with authentication — React Router v7, Prisma + Neon, Tailwind CSS v4, TypeScript.
 
 ---
 
-Built with ❤️ using React Router.
+## Screenshots
+
+
+![HomePage](app/public/screenshots/HomePage.png)
+![LoginPage](app/public/screenshots/LoginPage.png)
+![Dashboard](app/public/screenshots/Dashboard.png)
+![SearchResults](app/public/screenshots/SearchResults.png)
+
+
+---
+
+## Features
+
+- User registration and login
+- Create, complete, and soft-delete todos
+- Todos are private to each user
+
+---
+
+## Prerequisites
+
+- [Bun](https://bun.sh) v1.3+
+- A [Neon](https://neon.tech) account with a project and database created
+- Node.js is **not** required — Bun handles everything
+
+Install Bun if you don't have it:
+
+```bash
+# macOS / Linux
+curl -fsSL https://bun.sh/install | bash
+
+# Windows (PowerShell)
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+---
+
+## Setup
+
+### 1. Clone and install
+
+```bash
+git clone <your-repo-url>
+cd <project-folder>
+bun install
+```
+
+### 2. Environment variables
+
+Create a `.env` file in the project root:
+
+```dotenv
+DATABASE_URL="postgresql://<user>:<password>@<host>.neon.tech/<dbname>?sslmode=require"
+SESSION_SECRET="your-session-secret"
+NODE_ENV="development"
+```
+
+- `DATABASE_URL` — your Neon connection string (found in your Neon dashboard under **Connection Details**)
+- `SESSION_SECRET` — any long random string used to sign session cookies
+- `NODE_ENV` — set to `development` locally, `production` in deployment
+
+
+
+### 3. Set up the database
+
+```bash
+bunx --bun prisma db push
+bunx --bun prisma generate
+```
+
+### 4. Run the app
+
+```bash
+bun run dev
+```
+
+Visit [http://localhost:5173](http://localhost:5173).
+
+---
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `bun run dev` | Development server with HMR |
+| `bun run build` | Production build |
+| `bun run start` | Serve production build |
+| `bun run typecheck` | TypeScript check |
+
+---
+
+## Database Schema
+
+Two models: `User` (id, email, username, password, todos) and `Todo` (id, title, description, completed, deleted, userId). Todos are soft-deleted via a `deleted` flag rather than removed from the database.
+
+---
+
+## Deployment Notes
+
+- Set `NODE_ENV=production` in your hosting environment
+- Add `DATABASE_URL` and `SESSION_SECRET` as environment variables in your host's dashboard
+- Run `bunx --bun prisma migrate deploy` (not `dev`) in CI/CD before starting the server
+- Build the app with `bun run build`, then serve with `bun run start`
+
+---
+
+## Troubleshooting
+
+**Prisma Client missing** — run `bunx --bun prisma generate`.
+
+**DATABASE_URL error on startup** — check your `.env` exists and the Neon URL includes `?sslmode=require`.
+
+**Schema changes not reflected** — run `bunx --bun prisma db push` then `bunx --bun prisma generate` after editing `schema.prisma`.

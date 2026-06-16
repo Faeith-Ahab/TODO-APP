@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import { Bookmark, Trash2 } from "lucide-react";
 import type { Todo } from "~/types";
 
+const TITLE_MAX_LENGTH = 18;
+
 interface EditModalProps {
   todo: Todo;
   onClose: () => void;
@@ -52,6 +54,7 @@ export function EditModal({ todo, onClose }: EditModalProps) {
                 defaultValue={todo.title}
                 placeholder="Title"
                 className="new-task-input"
+                maxLength={TITLE_MAX_LENGTH}
                 required
               />
             </div>

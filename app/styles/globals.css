@@ -771,6 +771,11 @@ body {
   font-size: clamp(2rem, 3.2vw, 4rem);
   justify-content: flex-start;
   white-space: nowrap;
+  -webkit-text-stroke: 0;
+  text-shadow:
+    0 0.18rem 0.35rem rgba(0, 0, 0, 0.34),
+    0 0.55rem 1.1rem rgba(0, 0, 0, 0.2);
+  transform: translateY(-0.08rem);
 }
 
 .sidebar-greeting {
@@ -974,7 +979,7 @@ body {
   color: white;
   display: grid;
   gap: clamp(1rem, 2vw, 2.4rem);
-  grid-template-columns: minmax(11rem, 0.72fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(8rem, 0.42fr) minmax(0, 1fr) auto;
   min-height: clamp(5rem, 10.3vh, 7.35rem);
   padding: clamp(0.75rem, 1.6vh, 1rem) clamp(1.4rem, 2vw, 2.2rem);
 }
@@ -1014,9 +1019,15 @@ body {
   font-weight: 300;
   line-height: 1.25;
   margin-top: 0.28rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
   white-space: nowrap;
+}
+
+@media (min-width: 981px) {
+  .task-meta {
+    font-size: clamp(0.82rem, 1vw, 1.18rem);
+  }
 }
 
 .task-actions {
@@ -1154,6 +1165,7 @@ body {
 .new-task-date {
   align-items: center;
   display: flex;
+  font-size: clamp(1.15rem, 1.35vw, 1.6rem);
   gap: clamp(1.2rem, 2vw, 2.4rem);
   margin-bottom: 0;
   margin-top: clamp(0.7rem, 1.4vh, 1rem);
@@ -1199,7 +1211,7 @@ body {
   color: rgba(20, 20, 20, 0.9);
   flex: 1;
   font: inherit;
-  font-size: clamp(1.9rem, 2.35vw, 2.85rem);
+  font-size: clamp(1.15rem, 1.35vw, 1.6rem);
   font-weight: 300;
   min-height: clamp(13rem, 39vh, 26rem);
   outline: none;
@@ -1469,15 +1481,31 @@ body {
   }
 
   .task-title {
+    grid-column: 1;
+    grid-row: 1;
     font-size: 1.18rem;
   }
 
   .task-description {
+    grid-column: 2;
+    grid-row: 1;
     font-size: 0.98rem;
   }
 
+  .task-copy {
+    display: contents;
+  }
+
   .task-meta {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
     font-size: 0.78rem;
+    margin-top: -0.35rem;
+    overflow: visible;
+    text-align: left;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .task-meta-updated {
@@ -1486,6 +1514,8 @@ body {
 
   .task-actions {
     gap: 0.55rem;
+    grid-column: 3;
+    grid-row: 1;
   }
 
   .custom-checkbox {
@@ -1682,6 +1712,20 @@ body {
   width: 100%;
 }
 
+.search-box--page .search-icon {
+  order: 2;
+}
+
+.search-box--page input::placeholder {
+  color: rgba(210, 210, 210, 0.82);
+  font-size: 0.78em;
+  font-style: italic;
+}
+
+.search-results-heading {
+  display: none;
+}
+
 /* "STATUS" italic label aligned right, above the results panel */
 .search-status-label {
   color: rgba(255, 255, 255, 0.82);
@@ -1694,11 +1738,15 @@ body {
   width: min(100%, 77rem);
 }
 
-/* Search results panel — slightly less tall than default tasks-panel */
+/* Search results panel */
 .search-tasks-panel {
-  flex: unset;
-  max-height: clamp(28rem, 52vh, 42rem);
+  flex: 1;
+  max-height: none;
   overflow: hidden;
+}
+
+.search-tasks-panel--idle {
+  display: none;
 }
 
 /* Row wrapper: positions the status badge outside/after the TaskItem */
@@ -1711,31 +1759,91 @@ body {
 
 /* Status badge */
 .search-status-badge {
-  border: 2px solid currentColor;
+  align-items: center;
+  background: rgba(250, 247, 239, 0.92);
+  border: 0;
   border-radius: 9999px;
+  display: inline-flex;
   flex-shrink: 0;
-  font-size: clamp(1.1rem, 1.38vw, 1.65rem);
+  font-size: clamp(0.86rem, 1.02vw, 1.15rem);
   font-weight: 300;
+  justify-content: center;
   line-height: 1;
-  min-width: clamp(9rem, 11vw, 12rem);
-  padding: 0.52em 1.1em;
+  min-width: clamp(7.7rem, 8.5vw, 9.25rem);
+  padding: 0.42em 1em;
   text-align: center;
   white-space: nowrap;
 }
 
 .search-status--pending {
-  color: rgba(255, 255, 255, 0.88);
-  border-color: rgba(255, 255, 255, 0.75);
+  color: rgb(0, 155, 190);
 }
 
 .search-status--complete {
-  color: rgba(80, 210, 160, 0.95);
-  border-color: rgba(80, 210, 160, 0.8);
+  color: rgb(0, 185, 100);
 }
 
 .search-status--deleted {
-  color: rgba(240, 100, 100, 0.9);
-  border-color: rgba(240, 100, 100, 0.75);
+  color: rgb(255, 50, 50);
+}
+
+@media (min-width: 981px) {
+  .search-result-row {
+    position: relative;
+  }
+
+  .search-result-row .task-item {
+    grid-template-columns: minmax(10rem, 0.34fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: clamp(4.1rem, 7vh, 5.2rem);
+    padding-bottom: clamp(0.45rem, 0.8vh, 0.65rem);
+    padding-right: clamp(11.5rem, 12.5vw, 13.5rem);
+    padding-top: clamp(0.45rem, 0.8vh, 0.65rem);
+  }
+
+  .search-result-row .task-title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .search-result-row .task-copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .search-result-row .task-actions {
+    align-self: start;
+    gap: 0.45rem;
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
+    justify-self: start;
+    margin-top: 0.15rem;
+  }
+
+  .search-result-row .task-actions form,
+  .search-result-row .task-actions button {
+    flex-shrink: 0;
+  }
+
+  .search-result-row .icon-btn,
+  .search-result-row .custom-checkbox {
+    height: clamp(2.35rem, 2.75vw, 3.05rem);
+    padding: 0;
+    width: clamp(2.35rem, 2.75vw, 3.05rem);
+  }
+
+  .search-result-row .task-icon {
+    height: clamp(2.15rem, 2.45vw, 2.75rem);
+    width: clamp(2.15rem, 2.45vw, 2.75rem);
+  }
+
+  .search-result-row .search-status-badge {
+    position: absolute;
+    right: clamp(2.8rem, 4.2vw, 5rem);
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 /* Responsive: on narrow screens collapse the grid to a single column */
