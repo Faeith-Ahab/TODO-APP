@@ -1,4 +1,4 @@
-import { Form, Link, useLocation, useNavigate } from "react-router";
+import { Form, Link, useLocation } from "react-router";
 
 import {
   PenSquare,
@@ -11,8 +11,7 @@ import {
 
 interface SidebarProps {
   username: string;
-  searchQuery: string;
-  onSearchChange: (value: string) => void;
+  onNavigate?: () => void;
 }
 
 const navItems = [
@@ -20,18 +19,11 @@ const navItems = [
   { to: "/todos/pending", label: "Pending", icon: Clock, filter: "pending" },
   { to: "/todos/completed", label: "Completed", icon: CheckCircle, filter: "completed" },
   { to: "/todos/deleted", label: "Deleted", icon: Trash2, filter: "deleted" },
+  { to: "/todos/search", label: "Search", icon: Search, filter: "search" },
 ];
 
-export function Sidebar({ username, searchQuery, onSearchChange }: SidebarProps) {
+export function Sidebar({ username, onNavigate }: SidebarProps) {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const handleSearchChange = (value: string) => {
-    onSearchChange(value);
-    const params = new URLSearchParams();
-    if (value.trim()) params.set("q", value);
-    navigate(`/todos/search${params.toString() ? `?${params}` : ""}`);
-  };
 
   return (
     <aside className="dashboard-sidebar">
@@ -49,25 +41,12 @@ export function Sidebar({ username, searchQuery, onSearchChange }: SidebarProps)
             key={to}
             to={to}
             className={`sidebar-item ${location.pathname === to ? "active" : ""}`}
+            onClick={onNavigate}
           >
             <Icon className="sidebar-icon" strokeWidth={1.8} />
             <span>{label}</span>
           </Link>
         ))}
-
-        {/* Search */}
-        <Form method="get" action="/todos/search" className="sidebar-search-wrap">
-          <div className="search-box">
-            <Search className="search-icon" />
-            <input
-              name="q"
-              type="text"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-            />
-          </div>
-        </Form>
       </div>
 
       {/* Sign out */}

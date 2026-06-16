@@ -35,6 +35,10 @@ export default function NewTask() {
   const isSubmitting = navigation.state === "submitting";
   const today = new Date();
   const dateStr = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+  const timeStr = today.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <div className="dashboard-screen new-task-screen">
@@ -59,7 +63,8 @@ export default function NewTask() {
               />
             </div>
             <div className="new-task-date">
-              Date: {dateStr}
+              <span className="new-task-time">{timeStr}</span>
+              <span>Date: {dateStr}</span>
             </div>
           </div>
 

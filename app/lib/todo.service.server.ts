@@ -66,6 +66,14 @@ export async function completeTodo(userId: number, todoId: number) {
   });
 }
 
+export async function uncompleteTodo(userId: number, todoId: number) {
+  await requireOwnedTodo(userId, todoId);
+  return prisma.todo.update({
+    where: { id: todoId },
+    data: { completed: false, updatedAt: new Date() },
+  });
+}
+
 export async function softDeleteTodo(userId: number, todoId: number) {
   await requireOwnedTodo(userId, todoId);
   return prisma.todo.update({
@@ -97,12 +105,22 @@ export async function editTodo(
   title: string,
   description: string | null,
 ) {
-  await requireOwnedTodo(userId, todoId);
+  const todo = await requireOwnedTodo(userId, todoId);
+  const hasMeaningfulChange =
+    stripWhitespace(title) !== stripWhitespace(todo.title) ||
+    stripWhitespace(description ?? "") !== stripWhitespace(todo.description ?? "");
+
   return prisma.todo.update({
     where: { id: todoId },
-    data: { title, description, updatedAt: new Date() },
+    data: {
+      title,
+      description,
+      completed: todo.completed && hasMeaningfulChange ? false : todo.completed,
+      updatedAt: new Date(),
+    },
   });
 }
 
-
-
+function stripWhitespace(value: string) {
+  return value.replace(/\s+/g, "");
+}

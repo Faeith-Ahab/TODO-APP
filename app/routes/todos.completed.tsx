@@ -1,8 +1,10 @@
 import { useLoaderData, useOutletContext } from "react-router";
+import { useState } from "react";
 
 import { requireUserId } from "~/lib/auth.server";
 import { getCompletedTodos } from "~/lib/todo.service.server";
 import { TaskItem } from "~/components/TaskItem";
+import { EditModal } from "~/components/EditModal";
 import type { Todo } from "~/types";
 
 export async function loader({ request }: { request: Request }) {
@@ -14,6 +16,11 @@ export async function loader({ request }: { request: Request }) {
 export default function Completed() {
   const { todos } = useLoaderData<typeof loader>();
   const { searchQuery } = useOutletContext<{ searchQuery: string }>();
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+
+  if (editingTodo) {
+    return <EditModal todo={editingTodo} onClose={() => setEditingTodo(null)} />;
+  }
 
   const filtered = todos.filter((t: Todo) => {
     if (!searchQuery) return true;
@@ -40,6 +47,7 @@ export default function Completed() {
                 key={todo.id}
                 todo={todo as unknown as Todo}
                 view="completed"
+                onEdit={(t: Todo) => setEditingTodo(t)}
               />
             ))
           )}

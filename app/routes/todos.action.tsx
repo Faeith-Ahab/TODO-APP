@@ -8,6 +8,7 @@ import {
   hardDeleteTodo,
   restoreTodo,
   softDeleteTodo,
+  uncompleteTodo,
 } from "~/lib/todo.service.server";
 
 export async function action({ request }: { request: Request }) {
@@ -20,6 +21,12 @@ export async function action({ request }: { request: Request }) {
     case "complete": {
       assertTodoId(todoId);
       await completeTodo(userId, todoId);
+      return { success: true };
+    }
+
+    case "uncomplete": {
+      assertTodoId(todoId);
+      await uncompleteTodo(userId, todoId);
       return { success: true };
     }
 
@@ -49,7 +56,7 @@ export async function action({ request }: { request: Request }) {
     case "edit": {
       const title = formData.get("title") as string;
       const description = formData.get("description") as string;
-      if (!title)
+      if (!title || title.trim() === "")
         return Response.json(
           { errors: { title: "Title is required." } },
           { status: 400 },

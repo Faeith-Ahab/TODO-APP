@@ -17,6 +17,14 @@ export function TaskItem({ todo, view, onEdit }: TaskItemProps) {
     return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
   };
 
+  const formatTime = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <div className={`task-item task-enter task-item-${view}`}>
       {/* Title + meta */}
@@ -34,9 +42,14 @@ export function TaskItem({ todo, view, onEdit }: TaskItemProps) {
         </div>
         <div className="task-meta">
           {view === "completed" || view === "deleted" ? (
-            <>Updated at: {formatDate(todo.updatedAt)} &nbsp; Created at: {formatDate(todo.createdAt)}</>
+            <>
+              <span className="task-meta-updated">
+                Updated at: {formatDate(todo.updatedAt)} &nbsp;
+              </span>
+              Created at: {formatDate(todo.createdAt)} &nbsp; {formatTime(todo.createdAt)}
+            </>
           ) : (
-            <>Created at: {formatDate(todo.createdAt)}</>
+            <>Created at: {formatDate(todo.createdAt)} &nbsp; {formatTime(todo.createdAt)}</>
           )}
         </div>
       </div>
@@ -78,10 +91,27 @@ export function TaskItem({ todo, view, onEdit }: TaskItemProps) {
 
         {view === "completed" && (
           <>
-            {/* Checked checkbox (already completed) */}
-            <div className="custom-checkbox checked">
-              <Check className="task-check-icon" strokeWidth={3} />
-            </div>
+            {/* Uncheck to move back to pending */}
+            <fetcher.Form method="post" action="/todos/action">
+              <input type="hidden" name="intent" value="uncomplete" />
+              <input type="hidden" name="todoId" value={todo.id} />
+              <button
+                type="submit"
+                className="custom-checkbox checked"
+                aria-label="Move task back to pending"
+              >
+                <Check className="task-check-icon" strokeWidth={3} />
+              </button>
+            </fetcher.Form>
+
+            {/* Edit */}
+            <button
+              className="icon-btn"
+              onClick={() => onEdit?.(todo)}
+              aria-label="Edit task"
+            >
+              <Pen className="task-icon" strokeWidth={1.8} />
+            </button>
 
             {/* Soft delete */}
             <fetcher.Form method="post" action="/todos/action">

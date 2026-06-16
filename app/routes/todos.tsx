@@ -1,9 +1,10 @@
-import { Outlet, useLoaderData, useLocation } from "react-router";
+import { Outlet, useLoaderData } from "react-router";
 
 import { requireUserId } from "~/lib/auth.server";
 import { getUserById } from "~/lib/auth.service.server";
 import { Sidebar } from "~/components/Sidebar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export async function loader({ request }: { request: Request }) {
   const userId = await requireUserId(request);
@@ -13,34 +14,49 @@ export async function loader({ request }: { request: Request }) {
 
 export default function TodosLayout() {
   const { username } = useLoaderData<typeof loader>();
-  const location = useLocation();
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    if (location.pathname === "/todos/search") {
-      setSearchQuery(new URLSearchParams(location.search).get("q") ?? "");
-    }
-  }, [location.pathname, location.search]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const searchQuery = "";
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="page-bg" />
-      <div className="page-content min-h-screen flex">
-        {/* Sidebar */}
-        <Sidebar
-          username={username ?? ""}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+      <div className="page-content min-h-screen dashboard-layout">
+        <button
+          type="button"
+          className="drawer-toggle"
+          onClick={() => setIsDrawerOpen(true)}
+          aria-label="Open menu"
+          aria-expanded={isDrawerOpen}
+        >
+          <Menu strokeWidth={1.8} />
+        </button>
 
-        {/* Divider */}
+        <div className="dashboard-sidebar-desktop">
+          <Sidebar username={username ?? ""} />
+        </div>
+
         <div className="sidebar-divider" />
 
-        {/* Main content */}
-        <div className="dashboard-main">
-          <Outlet context={{ searchQuery }} />
+        <div
+          className={`drawer-backdrop ${isDrawerOpen ? "open" : ""}`}
+          onClick={() => setIsDrawerOpen(false)}
+        />
+
+        <div className={`dashboard-drawer ${isDrawerOpen ? "open" : ""}`}>
+          <button
+            type="button"
+            className="drawer-close"
+            onClick={() => setIsDrawerOpen(false)}
+            aria-label="Close menu"
+          >
+            <X strokeWidth={1.8} />
+          </button>
+          <Sidebar username={username ?? ""} onNavigate={() => setIsDrawerOpen(false)} />
         </div>
+
+        <main className="dashboard-main">
+          <Outlet context={{ searchQuery }} />
+        </main>
       </div>
     </div>
   );

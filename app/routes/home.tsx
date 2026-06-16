@@ -17,7 +17,7 @@ export default function Index() {
 
               <div className="home-copy">
                 <p className="home-description">
-                  A todo app, designed minimalist workspace that clears the digital clutter,
+                  A todo app, designed minimalist workspace that clears the digital clutter
                 </p>
 
                 <p className="home-tagline">
