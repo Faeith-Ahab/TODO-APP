@@ -2,12 +2,12 @@
   "name": "remix-application",
   "private": true,
   "type": "module",
-  "scripts": {
-    "build": "react-router build",
-    "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "tsc --noEmit"
-  },
+"scripts": {
+  "build": "prisma generate && react-router build",
+  "dev": "prisma generate && react-router dev",
+  "start": "react-router-serve ./build/server/index.js",
+  "typecheck": "tsc --noEmit"
+},
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "@prisma/adapter-neon": "^7.8.0",
