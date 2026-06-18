@@ -21,7 +21,7 @@ export default function Index() {
                 </p>
 
                 <p className="home-tagline">
-                  FOCUS. CLARITY.FLOW
+                  FOCUS.CLARITY.FLOW
                 </p>
               </div>
             </div>
